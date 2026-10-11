@@ -1,0 +1,466 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black Lotus | Disaster Intelligence</title>
+
+    <style>
+        :root {
+            --background: #0b1120;
+            --panel: #151f32;
+            --border: #2b3a52;
+            --text: #edf3ff;
+            --muted: #a7b5ca;
+            --accent: #56d6b0;
+            --danger: #ff7777;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            background: var(--background);
+            color: var(--text);
+            font-family: Arial, Helvetica, sans-serif;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1150px;
+            margin: 0 auto;
+        }
+
+        header {
+            padding: 25px 0;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .brand {
+            color: var(--accent);
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 8px 0;
+            font-size: clamp(30px, 5vw, 48px);
+            line-height: 1.2;
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        .subtitle,
+        .muted {
+            color: var(--muted);
+        }
+
+        .panel {
+            padding: 24px;
+            margin-bottom: 24px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: #0b1425;
+            color: var(--text);
+            font-size: 15px;
+        }
+
+        input:focus,
+        select:focus {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 22px;
+            padding: 14px 18px;
+            border: none;
+            border-radius: 9px;
+            background: var(--accent);
+            color: #06251d;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            filter: brightness(1.08);
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric {
+            padding: 20px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .metric-label {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .metric-value {
+            margin-top: 5px;
+            font-size: 27px;
+            font-weight: bold;
+            overflow-wrap: anywhere;
+        }
+
+        .map-frame {
+            display: block;
+            width: 100%;
+            height: 540px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: white;
+        }
+
+        .notice {
+            padding: 14px;
+            margin: 16px 0;
+            border: 1px solid var(--border);
+            border-radius: 9px;
+            color: var(--muted);
+        }
+
+        .error {
+            padding: 18px;
+            margin-bottom: 24px;
+            border: 1px solid var(--danger);
+            border-radius: 12px;
+            background: #301b26;
+        }
+
+        .error h2 {
+            color: var(--danger);
+        }
+
+        .footer {
+            padding: 20px 0;
+            color: var(--muted);
+            font-size: 13px;
+            text-align: center;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 14px;
+            }
+
+            .panel {
+                padding: 17px;
+            }
+
+            .form-grid,
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+
+            .map-frame {
+                height: 420px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="container">
+
+        <header>
+            <div class="brand">Black Lotus</div>
+            <h1>Disaster Intelligence</h1>
+            <p class="subtitle">
+                Explore satellite-based fire detections, local weather
+                conditions, and illustrative perimeter scenarios.
+            </p>
+        </header>
+
+        <section class="panel">
+            <h2>Configure your analysis</h2>
+
+            <p class="muted">
+                Enter the geographic coordinates of the area you want
+                to investigate. The default area is around Pune, India.
+            </p>
+
+            <form method="POST" action="/">
+                <div class="form-grid">
+
+                    <div>
+                        <label for="west">Western longitude</label>
+                        <input
+                            type="number"
+                            id="west"
+                            name="west"
+                            step="any"
+                            required
+                            value="{{ defaults.west if defaults else 73.5 }}"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="east">Eastern longitude</label>
+                        <input
+                            type="number"
+                            id="east"
+                            name="east"
+                            step="any"
+                            required
+                            value="{{ defaults.east if defaults else 74.5 }}"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="south">Southern latitude</label>
+                        <input
+                            type="number"
+                            id="south"
+                            name="south"
+                            step="any"
+                            required
+                            value="{{ defaults.south if defaults else 18.0 }}"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="north">Northern latitude</label>
+                        <input
+                            type="number"
+                            id="north"
+                            name="north"
+                            step="any"
+                            required
+                            value="{{ defaults.north if defaults else 19.0 }}"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="days">Satellite data period</label>
+                        <select id="days" name="days">
+                            {% for day in [1, 2, 3, 5, 7, 10] %}
+                                <option
+                                    value="{{ day }}"
+                                    {% if defaults and defaults.days|int == day %}
+                                        selected
+                                    {% elif not defaults and day == 1 %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    Last {{ day }} day{% if day != 1 %}s{% endif %}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                </div>
+
+                <button type="submit">
+                    Analyze Selected Area
+                </button>
+            </form>
+        </section>
+
+        {% if error %}
+        <section class="error" role="alert">
+            <h2>Analysis Failed</h2>
+            <p>{{ error }}</p>
+            <p>
+                Check the error above and the VS Code terminal.
+            </p>
+        </section>
+    {% endif %}
+
+        {% if result %}
+
+            <section>
+                <h2>Analysis Overview</h2>
+
+                <div class="metrics">
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Fire detections returned
+                        </div>
+                        <div class="metric-value">
+                            {{ result.fire_count }}
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Current temperature
+                        </div>
+                        <div class="metric-value">
+                            {% if result.weather.temperature is not none %}
+                                {{ result.weather.temperature }} °C
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="metric">
+                        <div class="metric-label">
+                            Wind speed
+                        </div>
+                        <div class="metric-value">
+                            {% if result.weather.wind_speed is not none %}
+                                {{ result.weather.wind_speed }} km/h
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+            <section class="panel">
+                <h2>Fire Detection Map</h2>
+
+                <p class="muted">
+                    Satellite detections and approximate perimeter
+                    scenarios for the selected area.
+                </p>
+
+                {% if result.fire_count == 0 %}
+                    <div class="notice">
+                        No fire detections were returned for this
+                        selection and period. This does not prove
+                        that no fire exists in the area.
+                    </div>
+                {% endif %}
+
+                {% if result.fire_count < 3 %}
+                    <div class="notice">
+                        There may be too few detections to create a
+                        meaningful perimeter. Any displayed boundary
+                        should be treated cautiously.
+                    </div>
+                {% endif %}
+
+                {% if map_html %}
+                    <iframe
+                        class="map-frame"
+                        title="Disaster intelligence map"
+                        srcdoc="{{ map_html | e }}"
+                        loading="lazy"
+                        sandbox=""
+                    ></iframe>
+                {% else %}
+                    <div class="notice">
+                        The map could not be generated for this request.
+                    </div>
+                {% endif %}
+            </section>
+
+            <section class="panel">
+                <h2>Weather Conditions</h2>
+
+                <p>
+                    <strong>Temperature:</strong>
+                    {% if result.weather.temperature is not none %}
+                        {{ result.weather.temperature }} °C
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Relative humidity:</strong>
+                    {% if result.weather.humidity is not none %}
+                        {{ result.weather.humidity }}%
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Wind direction:</strong>
+                    {% if result.weather.wind_direction is not none %}
+                        {{ result.weather.wind_direction }}°
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </p>
+
+                <p>
+                    <strong>Wind speed:</strong>
+                    {% if result.weather.wind_speed is not none %}
+                        {{ result.weather.wind_speed }} km/h
+                    {% else %}
+                        Unavailable
+                    {% endif %}
+                </p>
+            </section>
+
+            <section class="panel">
+                <h2>Important Limitations</h2>
+                <p class="muted">
+                    Satellite detections are not a complete inventory
+                    of every fire. Cloud cover, satellite timing,
+                    detection limits, and data availability can affect
+                    results.
+                </p>
+                <p class="muted">
+                    The 6-hour and 12-hour perimeter scenarios are
+                    illustrative wind-shift estimates, not validated
+                    fire-spread predictions. Do not use this prototype
+                    as the sole basis for emergency decisions.
+                </p>
+                <p class="muted">
+                    For an actual emergency, follow local authorities
+                    and official disaster-management alerts.
+                </p>
+            </section>
+
+        {% endif %}
+
+        <footer class="footer">
+            Black Lotus · Disaster Intelligence Prototype
+            <br>
+            Data availability and accuracy are not guaranteed.
+        </footer>
+
+    </main>
+</body>
+</html>
